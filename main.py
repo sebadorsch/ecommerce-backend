@@ -4,17 +4,12 @@ import schemas as _schemas
 import services as _services
 from fastapi.middleware.cors import CORSMiddleware
 from models import User
-
 from datetime import datetime, timedelta
-from typing import Annotated
-
 from fastapi import Depends, FastAPI, HTTPException, status, Body
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from jose import JWTError, jwt
-from pydantic import BaseModel
+from jose import jwt
 from dotenv import load_dotenv
 import os
-from fastapi.responses import ORJSONResponse
 
 load_dotenv()
 
@@ -23,20 +18,9 @@ ALGORITHM = os.getenv("ALGORITHM")
 
 app = FastAPI()
 
-origins = [
-  "http://localhost",
-  "http://127.0.0.1",
-  "http://localhost:3000",
-  "http://localhost:3001",
-  "http://localhost:5173",
-  "http://127.0.0.1:3000"
-  "http://127.0.0.1:3001"
-  "http://127.0.0.1:5173"
-]
-
 app.add_middleware(
   CORSMiddleware,
-  allow_origins=origins,
+  allow_origins=["*"],
   allow_credentials=True,
   allow_methods=["*"],
   allow_headers=["*"],
@@ -61,7 +45,6 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 async def create_user(user: _schemas.UserCreate,
                       db: _orm.Session = Depends(_services.get_db)):
   db_user = await _services.get_user_by_email(user.email, db)
-  print(db_user)
   if db_user:
     raise HTTPException(status_code=400, detail="Email already in use")
 
