@@ -1,5 +1,6 @@
 import datetime as _dt
 import pydantic as _pydentic
+from pydantic import BaseModel
 
 
 class _UserBase(_pydentic.BaseModel):
@@ -40,3 +41,21 @@ class Lead(_LeadBase):
 
   class Config:
     orm_model = True
+
+
+class TokenRequest(_pydentic.BaseModel):
+  access_token: str
+  token_type: str
+
+
+class UserInDB(User):
+  hashed_password: str
+
+
+class Token(BaseModel):
+  access_token: str
+  token_type: str
+
+
+class TokenData(BaseModel):
+  username: str | None = None
